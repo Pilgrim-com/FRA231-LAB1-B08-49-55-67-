@@ -7,9 +7,9 @@
  *
  * Code generation for model "QEI_Polling".
  *
- * Model version              : 1.1
+ * Model version              : 1.2
  * Simulink Coder version : 24.2 (R2024b) 21-Jun-2024
- * C source code generated on : Thu Oct 31 21:34:32 2024
+ * C source code generated on : Fri Nov  1 00:02:00 2024
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M

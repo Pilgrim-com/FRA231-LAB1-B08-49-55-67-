@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'QEI_Polling'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.2
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Thu Oct 31 21:34:32 2024
+ * C/C++ source code generated on : Fri Nov  1 00:02:00 2024
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -44,7 +44,7 @@ static void QEI_Polling_SystemCore_setup_k0(stm32cube_blocks_EncoderBlock_T *obj
 /* System initialize for atomic system: */
 void QEI_Pollin_DigitalPortRead_Init(DW_DigitalPortRead_QEI_Pollin_T *localDW)
 {
-  /* Start for MATLABSystem: '<S13>/Digital Port Read' */
+  /* Start for MATLABSystem: '<S14>/Digital Port Read' */
   localDW->objisempty = true;
   localDW->obj.isInitialized = 1;
 }
@@ -54,10 +54,10 @@ void QEI_Polling_DigitalPortRead(B_DigitalPortRead_QEI_Polling_T *localB)
 {
   uint32_T pinReadLoc;
 
-  /* MATLABSystem: '<S13>/Digital Port Read' */
+  /* MATLABSystem: '<S14>/Digital Port Read' */
   pinReadLoc = LL_GPIO_ReadInputPort(GPIOC);
 
-  /* MATLABSystem: '<S13>/Digital Port Read' */
+  /* MATLABSystem: '<S14>/Digital Port Read' */
   localB->DigitalPortRead = ((pinReadLoc & 8192U) != 0U);
 }
 
@@ -65,6 +65,7 @@ void QEI_Polling_DigitalPortRead(B_DigitalPortRead_QEI_Polling_T *localB)
  * System initialize for atomic system:
  *    '<Root>/MATLAB Function'
  *    '<Root>/MATLAB Function1'
+ *    '<Root>/MATLAB Function2'
  */
 void QEI_Polling_MATLABFunction_Init(DW_MATLABFunction_QEI_Polling_T *localDW)
 {
@@ -75,20 +76,21 @@ void QEI_Polling_MATLABFunction_Init(DW_MATLABFunction_QEI_Polling_T *localDW)
  * Output and update for atomic system:
  *    '<Root>/MATLAB Function'
  *    '<Root>/MATLAB Function1'
+ *    '<Root>/MATLAB Function2'
  */
 void QEI_Polling_MATLABFunction(boolean_T rtu_blue_in, real_T rtu_count, real_T *
   rty_pulse, real_T *rty_velocity, DW_MATLABFunction_QEI_Polling_T *localDW)
 {
   real_T diff_count;
   localDW->sfEvent = QEI_Polling_CALL_EVENT;
-  if (!localDW->previousCount_not_empty) {
-    localDW->previousCount = rtu_count;
-    localDW->previousCount_not_empty = true;
+  if (!localDW->lastCount_not_empty) {
+    localDW->lastCount = rtu_count;
+    localDW->lastCount_not_empty = true;
     localDW->unwrappedPositionPrev_not_empty = true;
   }
 
-  diff_count = rtu_count - localDW->previousCount;
-  *rty_velocity = diff_count / 24.0 / 0.01 * 60.0;
+  diff_count = rtu_count - localDW->lastCount;
+  *rty_velocity = diff_count / 24.0 / 0.1 * 60.0;
   if (diff_count > 32760.0) {
     localDW->unwrappedPositionPrev += diff_count - 65520.0;
   } else if (diff_count < -32760.0) {
@@ -102,7 +104,7 @@ void QEI_Polling_MATLABFunction(boolean_T rtu_blue_in, real_T rtu_count, real_T 
     *rty_velocity = 0.0;
   }
 
-  localDW->previousCount = rtu_count;
+  localDW->lastCount = rtu_count;
   *rty_pulse = localDW->unwrappedPositionPrev;
 }
 
@@ -196,7 +198,8 @@ static void QEI_Polling_SystemCore_setup_k0(stm32cube_blocks_EncoderBlock_T *obj
 /* Model step function */
 void QEI_Polling_step(void)
 {
-  real_T diff_count;
+  real_T B;
+  real_T currentA;
   uint32_T timerCounts;
   QEI_Polling_DigitalPortRead(&QEI_Polling_B.DigitalPortRead);
 
@@ -240,46 +243,27 @@ void QEI_Polling_step(void)
    *  DataTypeConversion: '<Root>/Data Type Conversion2'
    *  MATLABSystem: '<Root>/Encoder2'
    */
-  if (!QEI_Polling_DW.previousCount_not_empty) {
-    QEI_Polling_DW.previousCount = timerCounts;
-    QEI_Polling_DW.previousCount_not_empty = true;
-  }
+  QEI_Polling_MATLABFunction(QEI_Polling_B.DigitalPortRead_m.DigitalPortRead,
+    (real_T)timerCounts, &QEI_Polling_B.pulse_i, &QEI_Polling_B.velocity_b,
+    &QEI_Polling_DW.sf_MATLABFunction2);
 
-  diff_count = (real_T)timerCounts - QEI_Polling_DW.previousCount;
-  QEI_Polling_B.velocity_b = diff_count / 24.0 / 0.01 * 60.0;
-  if (diff_count > 32760.0) {
-    QEI_Polling_DW.unwrappedPositionPrev += diff_count - 65520.0;
-  } else if (diff_count < -32760.0) {
-    QEI_Polling_DW.unwrappedPositionPrev += diff_count + 65520.0;
-  } else {
-    QEI_Polling_DW.unwrappedPositionPrev += diff_count;
-  }
-
-  if (QEI_Polling_B.DigitalPortRead_m.DigitalPortRead) {
-    QEI_Polling_DW.unwrappedPositionPrev = 0.0;
-    QEI_Polling_B.velocity_b = 0.0;
-  }
-
-  QEI_Polling_DW.previousCount = timerCounts;
-  QEI_Polling_B.pulse_i = QEI_Polling_DW.unwrappedPositionPrev;
-
-  /* End of MATLAB Function: '<Root>/MATLAB Function2' */
   /* Gain: '<Root>/Gain2' */
   QEI_Polling_B.X1_Position_QEI = 0.26179938779914941 * QEI_Polling_B.pulse_i;
+  QEI_Polling_DigitalPortRead(&QEI_Polling_B.DigitalPortRead_ev);
 
-  /* MATLABSystem: '<S19>/Digital Port Read' */
+  /* MATLABSystem: '<S20>/Digital Port Read' */
   timerCounts = LL_GPIO_ReadInputPort(GPIOB);
 
   /* DataTypeConversion: '<Root>/Data Type Conversion3' incorporates:
-   *  MATLABSystem: '<S19>/Digital Port Read'
+   *  MATLABSystem: '<S20>/Digital Port Read'
    * */
   QEI_Polling_B.DataTypeConversion3 = ((timerCounts & 32U) != 0U);
 
-  /* MATLABSystem: '<S21>/Digital Port Read' */
+  /* MATLABSystem: '<S22>/Digital Port Read' */
   timerCounts = LL_GPIO_ReadInputPort(GPIOB);
 
   /* DataTypeConversion: '<Root>/Data Type Conversion4' incorporates:
-   *  MATLABSystem: '<S21>/Digital Port Read'
+   *  MATLABSystem: '<S22>/Digital Port Read'
    * */
   QEI_Polling_B.DataTypeConversion4 = ((timerCounts & 16U) != 0U);
 
@@ -294,6 +278,7 @@ void QEI_Polling_step(void)
     QEI_Polling_DW.lastCount_not_empty_g = true;
   }
 
+  currentA = QEI_Polling_B.DataTypeConversion3;
   if (QEI_Polling_DW.lastA_j != QEI_Polling_B.DataTypeConversion3) {
     if ((QEI_Polling_B.DataTypeConversion4 == 1.0) &&
         (QEI_Polling_B.DataTypeConversion3 == 1.0)) {
@@ -305,8 +290,14 @@ void QEI_Polling_step(void)
   }
 
   QEI_Polling_B.velocity_f = (QEI_Polling_DW.count_h -
-    QEI_Polling_DW.lastCount_h) / 0.001 * 60.0;
-  QEI_Polling_DW.lastA_j = QEI_Polling_B.DataTypeConversion3;
+    QEI_Polling_DW.lastCount_h) / 0.01 * 60.0;
+  if (QEI_Polling_B.DigitalPortRead_ev.DigitalPortRead) {
+    QEI_Polling_DW.count_h = 0.0;
+    QEI_Polling_B.velocity_f = 0.0;
+    currentA = 0.0;
+  }
+
+  QEI_Polling_DW.lastA_j = currentA;
   QEI_Polling_DW.lastCount_h = QEI_Polling_DW.count_h;
   QEI_Polling_B.pulse_b = QEI_Polling_DW.count_h;
 
@@ -325,6 +316,7 @@ void QEI_Polling_step(void)
     QEI_Polling_DW.lastCount_not_empty_m = true;
   }
 
+  currentA = QEI_Polling_B.DataTypeConversion3;
   if (QEI_Polling_DW.lastA_b != QEI_Polling_B.DataTypeConversion3) {
     if ((QEI_Polling_B.DataTypeConversion4 == 1.0) &&
         (QEI_Polling_B.DataTypeConversion3 == 1.0) && (QEI_Polling_DW.lastA_b ==
@@ -346,8 +338,14 @@ void QEI_Polling_step(void)
   }
 
   QEI_Polling_B.velocity_n = (QEI_Polling_DW.count_d -
-    QEI_Polling_DW.lastCount_j) / 0.001 * 60.0;
-  QEI_Polling_DW.lastA_b = QEI_Polling_B.DataTypeConversion3;
+    QEI_Polling_DW.lastCount_j) / 0.01 * 60.0;
+  if (QEI_Polling_B.DigitalPortRead_ev.DigitalPortRead) {
+    QEI_Polling_DW.count_d = 0.0;
+    QEI_Polling_B.velocity_n = 0.0;
+    currentA = 0.0;
+  }
+
+  QEI_Polling_DW.lastA_b = currentA;
   QEI_Polling_DW.lastCount_j = QEI_Polling_DW.count_d;
   QEI_Polling_B.pulse_n = QEI_Polling_DW.count_d;
 
@@ -356,6 +354,8 @@ void QEI_Polling_step(void)
   QEI_Polling_B.X2_Position = 0.26179938779914941 * QEI_Polling_B.pulse_n;
 
   /* MATLAB Function: '<Root>/MATLAB Function5' */
+  currentA = QEI_Polling_B.DataTypeConversion3;
+  B = QEI_Polling_B.DataTypeConversion4;
   if ((!QEI_Polling_DW.lastA_not_empty) || (!QEI_Polling_DW.lastB_not_empty) ||
       (!QEI_Polling_DW.count_not_empty) || (!QEI_Polling_DW.lastCount_not_empty))
   {
@@ -369,40 +369,51 @@ void QEI_Polling_step(void)
     QEI_Polling_DW.lastCount_not_empty = true;
   }
 
-  if ((QEI_Polling_DW.lastA == 0.0) && (QEI_Polling_B.DataTypeConversion3 == 1.0))
-  {
-    if (QEI_Polling_B.DataTypeConversion4 == 0.0) {
+  if ((QEI_Polling_DW.lastA == 0.0) && (QEI_Polling_DW.lastB == 0.0)) {
+    if ((QEI_Polling_B.DataTypeConversion3 == 1.0) &&
+        (QEI_Polling_B.DataTypeConversion4 == 0.0)) {
       QEI_Polling_DW.count++;
-    } else {
+    } else if ((QEI_Polling_B.DataTypeConversion3 == 0.0) &&
+               (QEI_Polling_B.DataTypeConversion4 == 1.0)) {
       QEI_Polling_DW.count--;
     }
-  } else if ((QEI_Polling_DW.lastA == 1.0) && (QEI_Polling_B.DataTypeConversion3
-              == 0.0)) {
-    if (QEI_Polling_B.DataTypeConversion4 == 0.0) {
-      QEI_Polling_DW.count--;
-    } else {
+  } else if ((QEI_Polling_DW.lastA == 1.0) && (QEI_Polling_DW.lastB == 0.0)) {
+    if ((QEI_Polling_B.DataTypeConversion3 == 1.0) &&
+        (QEI_Polling_B.DataTypeConversion4 == 1.0)) {
       QEI_Polling_DW.count++;
-    }
-  } else if ((QEI_Polling_DW.lastB == 0.0) && (QEI_Polling_B.DataTypeConversion4
-              == 1.0)) {
-    if (QEI_Polling_B.DataTypeConversion3 == 0.0) {
-      QEI_Polling_DW.count++;
-    } else {
+    } else if ((QEI_Polling_B.DataTypeConversion3 == 0.0) &&
+               (QEI_Polling_B.DataTypeConversion4 == 0.0)) {
       QEI_Polling_DW.count--;
     }
-  } else if ((QEI_Polling_DW.lastB == 1.0) && (QEI_Polling_B.DataTypeConversion4
-              == 0.0)) {
-    if (QEI_Polling_B.DataTypeConversion3 == 0.0) {
-      QEI_Polling_DW.count--;
-    } else {
+  } else if ((QEI_Polling_DW.lastA == 1.0) && (QEI_Polling_DW.lastB == 1.0)) {
+    if ((QEI_Polling_B.DataTypeConversion3 == 0.0) &&
+        (QEI_Polling_B.DataTypeConversion4 == 1.0)) {
       QEI_Polling_DW.count++;
+    } else if ((QEI_Polling_B.DataTypeConversion3 == 1.0) &&
+               (QEI_Polling_B.DataTypeConversion4 == 0.0)) {
+      QEI_Polling_DW.count--;
+    }
+  } else if ((QEI_Polling_DW.lastA == 0.0) && (QEI_Polling_DW.lastB == 1.0)) {
+    if ((QEI_Polling_B.DataTypeConversion3 == 0.0) &&
+        (QEI_Polling_B.DataTypeConversion4 == 0.0)) {
+      QEI_Polling_DW.count++;
+    } else if ((QEI_Polling_B.DataTypeConversion3 == 1.0) &&
+               (QEI_Polling_B.DataTypeConversion4 == 1.0)) {
+      QEI_Polling_DW.count--;
     }
   }
 
   QEI_Polling_B.velocity = (QEI_Polling_DW.count - QEI_Polling_DW.lastCount) /
-    0.001 * 60.0;
-  QEI_Polling_DW.lastA = QEI_Polling_B.DataTypeConversion3;
-  QEI_Polling_DW.lastB = QEI_Polling_B.DataTypeConversion4;
+    0.01 * 60.0;
+  if (QEI_Polling_B.DigitalPortRead_ev.DigitalPortRead) {
+    QEI_Polling_DW.count = 0.0;
+    QEI_Polling_B.velocity = 0.0;
+    currentA = 0.0;
+    B = 0.0;
+  }
+
+  QEI_Polling_DW.lastA = currentA;
+  QEI_Polling_DW.lastB = B;
   QEI_Polling_DW.lastCount = QEI_Polling_DW.count;
   QEI_Polling_B.pulse = QEI_Polling_DW.count;
 
@@ -426,18 +437,18 @@ void QEI_Polling_initialize(void)
 {
   /* Registration code */
   rtmSetTFinal(QEI_Polling_M, -1);
-  QEI_Polling_M->Timing.stepSize0 = 0.001;
+  QEI_Polling_M->Timing.stepSize0 = 0.01;
 
   /* External mode info */
-  QEI_Polling_M->Sizes.checksums[0] = (3702361027U);
-  QEI_Polling_M->Sizes.checksums[1] = (2621938554U);
-  QEI_Polling_M->Sizes.checksums[2] = (2144859575U);
-  QEI_Polling_M->Sizes.checksums[3] = (1860424498U);
+  QEI_Polling_M->Sizes.checksums[0] = (2901570582U);
+  QEI_Polling_M->Sizes.checksums[1] = (2352101743U);
+  QEI_Polling_M->Sizes.checksums[2] = (2327280988U);
+  QEI_Polling_M->Sizes.checksums[3] = (1073209407U);
 
   {
     static const sysRanDType rtAlwaysEnabled = SUBSYS_RAN_BC_ENABLE;
     static RTWExtModeInfo rt_ExtModeInfo;
-    static const sysRanDType *systemRan[15];
+    static const sysRanDType *systemRan[16];
     QEI_Polling_M->extModeInfo = (&rt_ExtModeInfo);
     rteiSetSubSystemActiveVectorAddresses(&rt_ExtModeInfo, systemRan);
     systemRan[0] = &rtAlwaysEnabled;
@@ -455,6 +466,7 @@ void QEI_Polling_initialize(void)
     systemRan[12] = &rtAlwaysEnabled;
     systemRan[13] = &rtAlwaysEnabled;
     systemRan[14] = &rtAlwaysEnabled;
+    systemRan[15] = &rtAlwaysEnabled;
     rteiSetModelMappingInfoPtr(QEI_Polling_M->extModeInfo,
       &QEI_Polling_M->SpecialInfo.mappingInfo);
     rteiSetChecksumsPtr(QEI_Polling_M->extModeInfo,
@@ -467,6 +479,9 @@ void QEI_Polling_initialize(void)
 
   /* SystemInitialize for MATLAB Function: '<Root>/MATLAB Function1' */
   QEI_Polling_MATLABFunction_Init(&QEI_Polling_DW.sf_MATLABFunction1);
+
+  /* SystemInitialize for MATLAB Function: '<Root>/MATLAB Function2' */
+  QEI_Polling_MATLABFunction_Init(&QEI_Polling_DW.sf_MATLABFunction2);
   QEI_Pollin_DigitalPortRead_Init(&QEI_Polling_DW.DigitalPortRead);
 
   /* Start for MATLABSystem: '<Root>/Encoder' */
@@ -485,6 +500,7 @@ void QEI_Polling_initialize(void)
   QEI_Polling_DW.obj.isInitialized = 0;
   QEI_Polling_DW.obj.matlabCodegenIsDeleted = false;
   QEI_Polling_SystemCore_setup_k0(&QEI_Polling_DW.obj);
+  QEI_Pollin_DigitalPortRead_Init(&QEI_Polling_DW.DigitalPortRead_ev);
 }
 
 /* Model terminate function */

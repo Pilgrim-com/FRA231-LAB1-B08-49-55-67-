@@ -28,32 +28,32 @@
       SrcLocation  ""\
     }\
     ChartData {\
-      Name         "previousCount"\
+      Name         "lastCount"\
       Description  "EmlPersistent"\
       SFName       ""\
       Path         ""\
-      SrcLocation  "QEI_Polling:40:167-180"\
+      SrcLocation  "QEI_Polling:40:65-74"\
     }\
     ChartData {\
-      Name         "previousCount_not_empty"\
+      Name         "lastCount_not_empty"\
       Description  "EmlPersistentSentinel"\
       SFName       ""\
       Path         ""\
-      SrcLocation  "QEI_Polling:40:167-180"\
+      SrcLocation  "QEI_Polling:40:65-74"\
     }\
     ChartData {\
       Name         "unwrappedPositionPrev"\
       Description  "EmlPersistent"\
       SFName       ""\
       Path         ""\
-      SrcLocation  "QEI_Polling:40:181-202"\
+      SrcLocation  "QEI_Polling:40:75-96"\
     }\
     ChartData {\
       Name         "unwrappedPositionPrev_not_empty"\
       Description  "EmlPersistentSentinel"\
       SFName       ""\
       Path         ""\
-      SrcLocation  "QEI_Polling:40:181-202"\
+      SrcLocation  "QEI_Polling:40:75-96"\
     }\
   }
   %return ChartDataElements

@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'QEI_Polling'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.2
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Thu Oct 31 21:34:32 2024
+ * C/C++ source code generated on : Fri Nov  1 00:02:00 2024
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -72,24 +72,24 @@
 #define rtmGetTPtr(rtm)                (&(rtm)->Timing.taskTime0)
 #endif
 
-/* Block signals for system '<S13>/Digital Port Read' */
+/* Block signals for system '<S14>/Digital Port Read' */
 typedef struct {
-  boolean_T DigitalPortRead;           /* '<S13>/Digital Port Read' */
+  boolean_T DigitalPortRead;           /* '<S14>/Digital Port Read' */
 } B_DigitalPortRead_QEI_Polling_T;
 
-/* Block states (default storage) for system '<S13>/Digital Port Read' */
+/* Block states (default storage) for system '<S14>/Digital Port Read' */
 typedef struct {
-  stm32cube_blocks_DigitalPortR_T obj; /* '<S13>/Digital Port Read' */
-  boolean_T objisempty;                /* '<S13>/Digital Port Read' */
+  stm32cube_blocks_DigitalPortR_T obj; /* '<S14>/Digital Port Read' */
+  boolean_T objisempty;                /* '<S14>/Digital Port Read' */
 } DW_DigitalPortRead_QEI_Pollin_T;
 
 /* Block states (default storage) for system '<Root>/MATLAB Function' */
 typedef struct {
-  real_T previousCount;                /* '<Root>/MATLAB Function' */
+  real_T lastCount;                    /* '<Root>/MATLAB Function' */
   real_T unwrappedPositionPrev;        /* '<Root>/MATLAB Function' */
   int32_T sfEvent;                     /* '<Root>/MATLAB Function' */
   boolean_T doneDoubleBufferReInit;    /* '<Root>/MATLAB Function' */
-  boolean_T previousCount_not_empty;   /* '<Root>/MATLAB Function' */
+  boolean_T lastCount_not_empty;       /* '<Root>/MATLAB Function' */
   boolean_T unwrappedPositionPrev_not_empty;/* '<Root>/MATLAB Function' */
 } DW_MATLABFunction_QEI_Polling_T;
 
@@ -115,9 +115,10 @@ typedef struct {
   real_T velocity_n2;                  /* '<Root>/MATLAB Function1' */
   real_T pulse_h;                      /* '<Root>/MATLAB Function' */
   real_T velocity_k;                   /* '<Root>/MATLAB Function' */
-  B_DigitalPortRead_QEI_Polling_T DigitalPortRead_m;/* '<S13>/Digital Port Read' */
-  B_DigitalPortRead_QEI_Polling_T DigitalPortRead_e;/* '<S13>/Digital Port Read' */
-  B_DigitalPortRead_QEI_Polling_T DigitalPortRead;/* '<S13>/Digital Port Read' */
+  B_DigitalPortRead_QEI_Polling_T DigitalPortRead_ev;/* '<S14>/Digital Port Read' */
+  B_DigitalPortRead_QEI_Polling_T DigitalPortRead_m;/* '<S14>/Digital Port Read' */
+  B_DigitalPortRead_QEI_Polling_T DigitalPortRead_e;/* '<S14>/Digital Port Read' */
+  B_DigitalPortRead_QEI_Polling_T DigitalPortRead;/* '<S14>/Digital Port Read' */
 } B_QEI_Polling_T;
 
 /* Block states (default storage) for system '<Root>' */
@@ -135,8 +136,6 @@ typedef struct {
   real_T lastA_j;                      /* '<Root>/MATLAB Function3' */
   real_T count_h;                      /* '<Root>/MATLAB Function3' */
   real_T lastCount_h;                  /* '<Root>/MATLAB Function3' */
-  real_T previousCount;                /* '<Root>/MATLAB Function2' */
-  real_T unwrappedPositionPrev;        /* '<Root>/MATLAB Function2' */
   boolean_T lastA_not_empty;           /* '<Root>/MATLAB Function5' */
   boolean_T lastB_not_empty;           /* '<Root>/MATLAB Function5' */
   boolean_T count_not_empty;           /* '<Root>/MATLAB Function5' */
@@ -147,12 +146,13 @@ typedef struct {
   boolean_T lastA_not_empty_a;         /* '<Root>/MATLAB Function3' */
   boolean_T count_not_empty_m;         /* '<Root>/MATLAB Function3' */
   boolean_T lastCount_not_empty_g;     /* '<Root>/MATLAB Function3' */
-  boolean_T previousCount_not_empty;   /* '<Root>/MATLAB Function2' */
+  DW_MATLABFunction_QEI_Polling_T sf_MATLABFunction2;/* '<Root>/MATLAB Function2' */
   DW_MATLABFunction_QEI_Polling_T sf_MATLABFunction1;/* '<Root>/MATLAB Function1' */
   DW_MATLABFunction_QEI_Polling_T sf_MATLABFunction;/* '<Root>/MATLAB Function' */
-  DW_DigitalPortRead_QEI_Pollin_T DigitalPortRead_m;/* '<S13>/Digital Port Read' */
-  DW_DigitalPortRead_QEI_Pollin_T DigitalPortRead_e;/* '<S13>/Digital Port Read' */
-  DW_DigitalPortRead_QEI_Pollin_T DigitalPortRead;/* '<S13>/Digital Port Read' */
+  DW_DigitalPortRead_QEI_Pollin_T DigitalPortRead_ev;/* '<S14>/Digital Port Read' */
+  DW_DigitalPortRead_QEI_Pollin_T DigitalPortRead_m;/* '<S14>/Digital Port Read' */
+  DW_DigitalPortRead_QEI_Pollin_T DigitalPortRead_e;/* '<S14>/Digital Port Read' */
+  DW_DigitalPortRead_QEI_Pollin_T DigitalPortRead;/* '<S14>/Digital Port Read' */
 } DW_QEI_Polling_T;
 
 /* Real-time Model Data Structure */
@@ -229,22 +229,25 @@ extern volatile boolean_T runModel;
  * '<S3>'   : 'QEI_Polling/Digital Port Read2'
  * '<S4>'   : 'QEI_Polling/Digital Port Read3'
  * '<S5>'   : 'QEI_Polling/Digital Port Read4'
- * '<S6>'   : 'QEI_Polling/MATLAB Function'
- * '<S7>'   : 'QEI_Polling/MATLAB Function1'
- * '<S8>'   : 'QEI_Polling/MATLAB Function2'
- * '<S9>'   : 'QEI_Polling/MATLAB Function3'
- * '<S10>'  : 'QEI_Polling/MATLAB Function4'
- * '<S11>'  : 'QEI_Polling/MATLAB Function5'
- * '<S12>'  : 'QEI_Polling/Digital Port Read/ECSoC'
- * '<S13>'  : 'QEI_Polling/Digital Port Read/ECSoC/ECSimCodegen'
- * '<S14>'  : 'QEI_Polling/Digital Port Read1/ECSoC'
- * '<S15>'  : 'QEI_Polling/Digital Port Read1/ECSoC/ECSimCodegen'
- * '<S16>'  : 'QEI_Polling/Digital Port Read2/ECSoC'
- * '<S17>'  : 'QEI_Polling/Digital Port Read2/ECSoC/ECSimCodegen'
- * '<S18>'  : 'QEI_Polling/Digital Port Read3/ECSoC'
- * '<S19>'  : 'QEI_Polling/Digital Port Read3/ECSoC/ECSimCodegen'
- * '<S20>'  : 'QEI_Polling/Digital Port Read4/ECSoC'
- * '<S21>'  : 'QEI_Polling/Digital Port Read4/ECSoC/ECSimCodegen'
+ * '<S6>'   : 'QEI_Polling/Digital Port Read5'
+ * '<S7>'   : 'QEI_Polling/MATLAB Function'
+ * '<S8>'   : 'QEI_Polling/MATLAB Function1'
+ * '<S9>'   : 'QEI_Polling/MATLAB Function2'
+ * '<S10>'  : 'QEI_Polling/MATLAB Function3'
+ * '<S11>'  : 'QEI_Polling/MATLAB Function4'
+ * '<S12>'  : 'QEI_Polling/MATLAB Function5'
+ * '<S13>'  : 'QEI_Polling/Digital Port Read/ECSoC'
+ * '<S14>'  : 'QEI_Polling/Digital Port Read/ECSoC/ECSimCodegen'
+ * '<S15>'  : 'QEI_Polling/Digital Port Read1/ECSoC'
+ * '<S16>'  : 'QEI_Polling/Digital Port Read1/ECSoC/ECSimCodegen'
+ * '<S17>'  : 'QEI_Polling/Digital Port Read2/ECSoC'
+ * '<S18>'  : 'QEI_Polling/Digital Port Read2/ECSoC/ECSimCodegen'
+ * '<S19>'  : 'QEI_Polling/Digital Port Read3/ECSoC'
+ * '<S20>'  : 'QEI_Polling/Digital Port Read3/ECSoC/ECSimCodegen'
+ * '<S21>'  : 'QEI_Polling/Digital Port Read4/ECSoC'
+ * '<S22>'  : 'QEI_Polling/Digital Port Read4/ECSoC/ECSimCodegen'
+ * '<S23>'  : 'QEI_Polling/Digital Port Read5/ECSoC'
+ * '<S24>'  : 'QEI_Polling/Digital Port Read5/ECSoC/ECSimCodegen'
  */
 #endif                                 /* QEI_Polling_h_ */
 
